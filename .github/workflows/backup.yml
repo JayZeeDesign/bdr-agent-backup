@@ -1,0 +1,30 @@
+name: Backup Tools
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */4 * * *"
+
+jobs:
+  extract_objects:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set environment variables
+        run: |
+          echo "GITHUB_REPOSITORY=${{ github.repository }}" >> $GITHUB_ENV
+          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+          pip install pygithub
+
+      - name: Backup Tools JSON
+        env:
+          RELEVANCE_REGION: ${{ secrets.RELEVANCE_REGION }}
+          RELEVANCE_API_KEY: ${{ secrets.RELEVANCE_API_KEY }}
+        run: |
+          python backup.py
